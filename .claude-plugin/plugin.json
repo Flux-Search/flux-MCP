@@ -1,0 +1,37 @@
+{
+  "name": "flux",
+  "version": "0.4.0",
+  "description": "Search the web and read documents with Flux: the passages that answer a question, with people, places, organisations and dates written in.",
+  "license": "MIT",
+  "author": {
+    "name": "Flux Search",
+    "url": "https://fluxsearch.io"
+  },
+  "homepage": "https://fluxsearch.io",
+  "repository": "https://github.com/Flux-Search/flux-MCP",
+  "keywords": [
+    "search",
+    "lineage",
+    "provenance",
+    "mcp"
+  ],
+  "mcpServers": {
+    "flux": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/bundle/index.js"
+      ],
+      "env": {
+        "FLUX_API_KEY": "${user_config.flux_api_key}"
+      }
+    }
+  },
+  "userConfig": {
+    "flux_api_key": {
+      "type": "string",
+      "title": "Flux API key",
+      "description": "Starts with user_sk_ or org_sk_. Create one at https://app.fluxsearch.io/keys",
+      "sensitive": true
+    }
+  }
+}

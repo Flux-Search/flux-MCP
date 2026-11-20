@@ -1,0 +1,35 @@
+{
+  "name": "flux-mcp",
+  "version": "0.4.0",
+  "description": "MCP server for the Flux API: Lineage (the passages that answer a question, with context written in) and Search",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Flux-Search/flux-MCP"
+  },
+  "type": "module",
+  "bin": {
+    "flux-mcp": "bundle/index.js"
+  },
+  "main": "bundle/index.js",
+  "files": [
+    "bundle",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "bundle": "esbuild src/index.ts --bundle --platform=node --target=node18 --format=esm --outfile=bundle/index.js",
+    "test": "esbuild test/flux.test.ts --bundle --platform=node --format=esm --outfile=.test/flux.test.mjs && node --test .test/flux.test.mjs",
+    "start": "node bundle/index.js",
+    "pack": "npx -y @anthropic-ai/mcpb pack . flux.mcpb"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@types/node": "^22",
+    "esbuild": "^0.28.1",
+    "typescript": "^5.6"
+  }
+}

@@ -1,0 +1,13 @@
+# The extension needs only the built server and its manifest.
+src/
+test/
+.test/
+node_modules/
+examples/
+skills/
+codex/
+.claude-plugin/
+.github/
+*.mcpb
+tsconfig.json
+package-lock.json

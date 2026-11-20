@@ -1,0 +1,24 @@
+name: Release
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm test
+      - run: npm run bundle && git diff --exit-code bundle/
+      # The Claude Desktop extension, attached to the release for a one-click install.
+      - run: npx -y @anthropic-ai/mcpb@2.1.2 pack . flux.mcpb
+      - run: gh release create "$GITHUB_REF_NAME" flux.mcpb --title "$GITHUB_REF_NAME" --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}

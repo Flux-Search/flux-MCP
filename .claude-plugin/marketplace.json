@@ -1,0 +1,16 @@
+{
+  "name": "flux-search",
+  "owner": {
+    "name": "Flux Search"
+  },
+  "metadata": {
+    "description": "Flux for Claude Code: the search and lineage tools, and the skill that teaches when to use them."
+  },
+  "plugins": [
+    {
+      "name": "flux",
+      "source": "./",
+      "description": "Search the web and read documents with Flux: the passages that answer a question, with people, places, organisations and dates written in."
+    }
+  ]
+}
