@@ -25,7 +25,8 @@ interface LineageResult {
   enriched_text: string;
   enrichment: string;
   score: number | null;
-  annotations: Annotation[];
+  /** Left out by the API when a passage names nothing. */
+  annotations?: Annotation[];
 }
 interface LineageSource {
   id: string;
@@ -242,7 +243,7 @@ function mentions(annotations: Annotation[]): string[] {
 function passage(r: LineageResult, n: number, indent = ""): string[] {
   const score = r.score !== null ? " [relevance " + r.score.toFixed(2) + "]" : "";
   const lines = [indent + n + "." + score, indent + r.enriched_text];
-  const m = mentions(r.annotations);
+  const m = mentions(r.annotations ?? []);
   if (m.length > 0) lines.push(indent + "  (" + m.join("; ") + ")");
   return lines;
 }
