@@ -17105,7 +17105,7 @@ function mentions(annotations) {
 function passage(r, n, indent = "") {
   const score = r.score !== null ? " [relevance " + r.score.toFixed(2) + "]" : "";
   const lines = [indent + n + "." + score, indent + r.enriched_text];
-  const m = mentions(r.annotations);
+  const m = mentions(r.annotations ?? []);
   if (m.length > 0) lines.push(indent + "  (" + m.join("; ") + ")");
   return lines;
 }

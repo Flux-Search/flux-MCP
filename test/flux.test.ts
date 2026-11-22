@@ -155,3 +155,15 @@ test("money reads as people write it", () => {
   assert.equal(money("0"), "$0");
   assert.match(renderAccount({ balance: { usd: "4.5000000000", usd_ticks: 45000000000, input_tokens: 9000000 } }), /\$4\.50.*9,000,000 tokens/);
 });
+
+test("lineage render: a passage with no annotations key renders", () => {
+  const { annotations: _gone, ...bare } = passageResult;
+  const text = renderLineage({
+    query: "why did prices rise?",
+    sources: [{ id: "s1", url: "https://x.test/a", published_at: null, input_tokens: 900 }],
+    results: [bare],
+    selection,
+    usage: { input_tokens: 900, output_tokens: 108, cost_usd: "0.0000900000" },
+  });
+  assert.match(text, /She \[Jane Doe\] said prices rose/);
+});
