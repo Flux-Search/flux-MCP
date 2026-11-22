@@ -14,18 +14,32 @@ The Claude Code plugin also installs a skill that teaches Claude when to use eac
 - A Flux API key. It starts with `user_sk_` (personal) or `org_sk_` (workspace). Create one at [app.fluxsearch.io/keys](https://app.fluxsearch.io/keys).
 - Node.js 18 or newer, for every client except Claude Desktop. Check with `node --version`, and install it from [nodejs.org](https://nodejs.org) if that fails.
 
-Nothing is cloned or built. Each install below is one step, and starting a new session loads it.
+Nothing is cloned or built. Each install below takes a few commands, and starting a new session loads it.
 
 ## Install
 
 ### Claude Code
 
-```
-/plugin marketplace add Flux-Search/flux-MCP
-/plugin install flux@flux-search
+This installs the tools and the skill. Run these in a terminal. They work the same for the CLI, the desktop app and the IDE extensions:
+
+```bash
+printf 'Flux API key: '; stty -echo; read -r FLUX_KEY; stty echo; echo
+claude plugin marketplace add Flux-Search/flux-MCP
+claude plugin install flux@flux-search --config "flux_api_key=$FLUX_KEY"
+unset FLUX_KEY
 ```
 
-This installs the tools and the skill. Claude Code asks for your Flux API key and keeps it in your system's credential store, not in a settings file. Start a new session afterwards. `/plugin` updates it later.
+The first line asks for the key without showing it or saving it in your shell history (it works in zsh, bash and sh). Claude Code keeps the key in your system's credential store, not in a settings file.
+
+Then start a new Claude Code session, because MCP servers only load when a session starts. Check that it worked:
+
+```bash
+claude mcp list
+```
+
+`plugin:flux:flux` should say `✔ Connected`.
+
+If you install without `--config`, the plugin is installed but has no key, and the server shows as failed. Run the `install` line again with `--config`; it sets the key on an existing install. Inside a terminal Claude Code session, `/plugin install flux@flux-search` asks for the key instead, and `/plugin configure flux@flux-search` changes it later.
 
 For the tools without the skill:
 
@@ -88,7 +102,7 @@ Any client that starts a server with a command works the same way. For Cursor, a
 
 ### Updating
 
-The Claude Code plugin updates through `/plugin`. Claude Desktop updates when you install a newer `flux.mcpb`. `npx -y github:Flux-Search/flux-MCP` fetches the latest version each time your client starts it; add a tag such as `#v0.4.0` to the end to pin one.
+Update the Claude Code plugin with `claude plugin marketplace update flux-search` and then `claude plugin update flux@flux-search`, and start a new session. Claude Desktop updates when you install a newer `flux.mcpb`. `npx -y github:Flux-Search/flux-MCP` fetches the latest version each time your client starts it; add a tag such as `#v0.4.0` to the end to pin one.
 
 ## Using it
 
@@ -163,7 +177,7 @@ Lineage is billed by the tokens it reads, once per question: five questions over
 | What you see | What to do |
 |---|---|
 | The tools do not appear | Start a new session, then check `claude mcp list` or `codex mcp get flux`. |
-| `FLUX_API_KEY is not set` | The server started without a key. Register it again with `--env FLUX_API_KEY=...`, or add the Cloud secret. |
+| `FLUX_API_KEY is not set`, or `flux` shows as failed in `/mcp` | The server started without a key. For the Claude Code plugin, run `claude plugin install flux@flux-search --config "flux_api_key=..."` and start a new session. Otherwise register it again with `--env FLUX_API_KEY=...`, or add the Cloud secret. |
 | `Auth unsupported` in Codex | Expected. See the Codex section. |
 | `unauthorized` | The key is wrong or has been revoked. It starts with `user_sk_` or `org_sk_`. |
 | `insufficient_credits` | The balance is too low. Add credit and try again. |

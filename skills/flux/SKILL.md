@@ -18,14 +18,16 @@ If the tools are not available, the MCP server is not connected. Do not work aro
 
 Tell the user, and give them this:
 
-> The Flux tools aren't connected. To install them in Claude Code:
+> The Flux tools aren't connected. To install them, run this in a terminal (it asks for your Flux API key without showing it):
 >
-> ```
-> /plugin marketplace add Flux-Search/flux-MCP
-> /plugin install flux@flux-search
+> ```bash
+> printf 'Flux API key: '; stty -echo; read -r FLUX_KEY; stty echo; echo
+> claude plugin marketplace add Flux-Search/flux-MCP
+> claude plugin install flux@flux-search --config "flux_api_key=$FLUX_KEY"
+> unset FLUX_KEY
 > ```
 >
-> Claude Code asks for your Flux API key while installing. Then start a new session: MCP servers load when a session begins, so they will not appear in this one.
+> If the plugin is already installed but shows as failed, the key is missing, and the same commands set it. Then start a new session: MCP servers load when a session begins, so they will not appear in this one. `claude mcp list` should show `plugin:flux:flux` as connected.
 
 They create a key at https://app.fluxsearch.io/keys. It starts with `user_sk_` or `org_sk_`. Never ask them to paste the key into the conversation.
 
