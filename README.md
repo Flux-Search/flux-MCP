@@ -102,7 +102,7 @@ Any client that starts a server with a command works the same way. For Cursor, a
 
 ### Updating
 
-Update the Claude Code plugin with `claude plugin marketplace update flux-search` and then `claude plugin update flux@flux-search`, and start a new session. Claude Desktop updates when you install a newer `flux.mcpb`. `npx -y github:Flux-Search/flux-MCP` fetches the latest version each time your client starts it; add a tag such as `#v0.4.0` to the end to pin one.
+Update the Claude Code plugin with `claude plugin marketplace update flux-search` and then `claude plugin update flux@flux-search`, and start a new session. Claude Desktop updates when you install a newer `flux.mcpb`. `npx -y github:Flux-Search/flux-MCP` fetches the latest version each time your client starts it; add a tag such as `#v0.5.0` to the end to pin one.
 
 ## Using it
 
@@ -137,6 +137,7 @@ Send `text` or `url`, and your questions in `queries`.
 | `enrich` | How many results Flux reads for passages. The default is all of them. `0` returns results without reading any pages, which is fastest. |
 | `allowed_domains` | Only return pages from these sites, up to 10. |
 | `blocked_domains` | Never return pages from these sites, up to 20. |
+| `questions` | Up to 9 questions asked of every page read, such as "Who is the chief executive?". Each page answers from its own text or says the answer is not there. Billed per question per page read. |
 
 ### `fetch`
 

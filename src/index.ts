@@ -21,7 +21,7 @@ import {
   type Built,
 } from "./flux.js";
 
-const VERSION = "0.4.0"; // keep in step with package.json
+const VERSION = "0.5.0"; // keep in step with package.json
 const API_URL = (process.env.FLUX_API_BASE_URL ?? "https://fluxsearch.io").replace(/\/+$/, "");
 const API_KEY = process.env.FLUX_API_KEY ?? "";
 const TIMEOUT_MS = Number(process.env.FLUX_TIMEOUT_MS ?? "120000");
@@ -186,6 +186,15 @@ const TOOLS = [
           items: { type: "string" },
           maxItems: 20,
           description: "Never return pages from these sites (up to 20).",
+        },
+        questions: {
+          type: "array",
+          items: { type: "string" },
+          maxItems: 9,
+          description:
+            "Questions to ask every page read, such as \"Who is the chief executive?\" (up to 9). " +
+            "Each page answers from its own text, or says the answer is not there. They change how " +
+            "pages are read, not which are found. Billed per question per page read.",
         },
       },
       required: ["query"],

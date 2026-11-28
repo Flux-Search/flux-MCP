@@ -10,6 +10,7 @@ export const MAX_CHARS = 60000;
 export const MAX_DOCUMENTS = 100;
 export const MAX_QUERIES = 10;
 const MAX_ALLOWED_DOMAINS = 10;
+export const MAX_QUESTIONS = 9;
 const MAX_BLOCKED_DOMAINS = 20;
 
 // ---- Response types -------------------------------------------------------------------------
@@ -87,6 +88,7 @@ interface SearchResult {
   snippet: string;
   enrichment: string;
   lineage: { results: LineageResult[]; selection: Selection } | null;
+  answers?: { question: string; found: boolean; passages: LineageResult[] }[] | null;
 }
 export interface SearchResponse {
   query: string;
@@ -98,6 +100,7 @@ export interface SearchResponse {
     searches: number;
     results_returned: number;
     results_enriched: number;
+    answers?: number;
     cost_usd: string;
   };
 }
@@ -210,6 +213,17 @@ export function searchBody(a: Record<string, unknown>): Built {
   if (allowed) filters.allowed_domains = allowed;
   if (blocked) filters.blocked_domains = blocked;
   if (Object.keys(filters).length > 0) body.filters = filters;
+
+  if (a.questions !== undefined) {
+    const qs = a.questions;
+    if (!Array.isArray(qs) || qs.length === 0 || qs.some((q) => !nonEmpty(q))) {
+      return { error: "questions must be a non-empty array of questions." };
+    }
+    if (qs.length > MAX_QUESTIONS) {
+      return { error: "questions has " + qs.length + " entries; the limit is " + MAX_QUESTIONS + "." };
+    }
+    body.questions = qs;
+  }
   return { body };
 }
 
@@ -348,13 +362,19 @@ export function renderSearch(r: SearchResponse, mode: string | null): string {
     } else if (NOT_READ[res.enrichment]) {
       out.push("   [" + NOT_READ[res.enrichment] + "]");
     }
+    for (const a of res.answers ?? []) {
+      out.push("   Q: " + a.question);
+      if (!a.found) out.push("      [not on this page]");
+      a.passages.forEach((p, i) => out.push(...passage(p, i + 1, "      ")));
+    }
   }
 
   if (r.related_queries.length > 0) out.push("\nRelated searches: " + r.related_queries.join("; "));
   const u = r.usage;
   out.push(
     "\n" + u.searches + " search billed, " + u.results_enriched + " of " + u.results_returned +
-      " results read. Cost " + money(u.cost_usd) + ".",
+      " results read" + (u.answers ? ", " + u.answers + " answers billed" : "") +
+      ". Cost " + money(u.cost_usd) + ".",
   );
   return out.join("\n");
 }
