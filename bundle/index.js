@@ -16988,6 +16988,7 @@ var MAX_CHARS = 6e4;
 var MAX_DOCUMENTS = 100;
 var MAX_QUERIES = 10;
 var MAX_ALLOWED_DOMAINS = 10;
+var MAX_QUESTIONS = 9;
 var MAX_BLOCKED_DOMAINS = 20;
 var isRecord = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
 var nonEmpty = (v) => typeof v === "string" && v.trim() !== "";
@@ -17080,6 +17081,16 @@ function searchBody(a) {
   if (allowed) filters.allowed_domains = allowed;
   if (blocked) filters.blocked_domains = blocked;
   if (Object.keys(filters).length > 0) body.filters = filters;
+  if (a.questions !== void 0) {
+    const qs = a.questions;
+    if (!Array.isArray(qs) || qs.length === 0 || qs.some((q) => !nonEmpty(q))) {
+      return { error: "questions must be a non-empty array of questions." };
+    }
+    if (qs.length > MAX_QUESTIONS) {
+      return { error: "questions has " + qs.length + " entries; the limit is " + MAX_QUESTIONS + "." };
+    }
+    body.questions = qs;
+  }
   return { body };
 }
 var pct = (ratio) => Math.round(ratio * 100) + "%";
@@ -17186,11 +17197,16 @@ function renderSearch(r, mode) {
     } else if (NOT_READ[res.enrichment]) {
       out.push("   [" + NOT_READ[res.enrichment] + "]");
     }
+    for (const a of res.answers ?? []) {
+      out.push("   Q: " + a.question);
+      if (!a.found) out.push("      [not on this page]");
+      a.passages.forEach((p, i) => out.push(...passage(p, i + 1, "      ")));
+    }
   }
   if (r.related_queries.length > 0) out.push("\nRelated searches: " + r.related_queries.join("; "));
   const u = r.usage;
   out.push(
-    "\n" + u.searches + " search billed, " + u.results_enriched + " of " + u.results_returned + " results read. Cost " + money(u.cost_usd) + "."
+    "\n" + u.searches + " search billed, " + u.results_enriched + " of " + u.results_returned + " results read" + (u.answers ? ", " + u.answers + " answers billed" : "") + ". Cost " + money(u.cost_usd) + "."
   );
   return out.join("\n");
 }
@@ -17233,7 +17249,7 @@ function apiErrorText(status, body, retryAfter) {
 }
 
 // src/index.ts
-var VERSION = "0.4.0";
+var VERSION = "0.5.0";
 var API_URL = (process.env.FLUX_API_BASE_URL ?? "https://fluxsearch.io").replace(/\/+$/, "");
 var API_KEY = process.env.FLUX_API_KEY ?? "";
 var TIMEOUT_MS = Number(process.env.FLUX_TIMEOUT_MS ?? "120000");
@@ -17360,6 +17376,12 @@ var TOOLS = [
           items: { type: "string" },
           maxItems: 20,
           description: "Never return pages from these sites (up to 20)."
+        },
+        questions: {
+          type: "array",
+          items: { type: "string" },
+          maxItems: 9,
+          description: 'Questions to ask every page read, such as "Who is the chief executive?" (up to 9). Each page answers from its own text, or says the answer is not there. They change how pages are read, not which are found. Billed per question per page read.'
         }
       },
       required: ["query"]

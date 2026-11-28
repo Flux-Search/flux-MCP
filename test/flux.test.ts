@@ -167,3 +167,38 @@ test("lineage render: a passage with no annotations key renders", () => {
   });
   assert.match(text, /She \[Jane Doe\] said prices rose/);
 });
+
+test("search: questions pass through, bounded", () => {
+  assert.deepEqual(searchBody({ query: "acme", questions: ["Who is the CEO?"] }), {
+    body: { query: "acme", questions: ["Who is the CEO?"] },
+  });
+  assert.ok("error" in searchBody({ query: "acme", questions: [] }));
+  assert.ok("error" in searchBody({ query: "acme", questions: [" "] }));
+  assert.ok("error" in searchBody({ query: "acme", questions: Array.from({ length: 10 }, (_, i) => "q" + i) }));
+});
+
+test("search render: each read page answers every question", () => {
+  const text = renderSearch(
+    {
+      query: "acme",
+      answer: null,
+      filters: null,
+      related_queries: [],
+      results: [
+        {
+          rank: 1, url: "https://a.test", title: "A", published_at: null, snippet: "",
+          enrichment: "none", lineage: { results: [], selection },
+          answers: [
+            { question: "Who is the CEO?", found: true, passages: [passageResult] },
+            { question: "Where is it based?", found: false, passages: [] },
+          ],
+        },
+      ],
+      usage: { searches: 1, results_returned: 1, results_enriched: 1, answers: 2, cost_usd: "0.005" },
+    },
+    null,
+  );
+  assert.match(text, /Q: Who is the CEO\?/);
+  assert.match(text, /Q: Where is it based\?\n {6}\[not on this page\]/);
+  assert.match(text, /2 answers billed/);
+});

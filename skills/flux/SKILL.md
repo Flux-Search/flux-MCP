@@ -65,6 +65,7 @@ For several documents, send `documents` (up to 100) in one call instead of many 
 - Leave `enrich` out when the user wants the answer itself.
 - `allowed_domains` (up to 10) and `blocked_domains` (up to 20) when the user names sites to trust or avoid.
 - `max_results` is 1 to 20, default 10.
+- `questions` (up to 9) when the user needs the same facts from every page, such as a CEO and an address for each company. Each page answers from its own text, or says the answer is not there. Use it to build a table across results.
 
 ## Reading the result
 

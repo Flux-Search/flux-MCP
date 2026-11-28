@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "flux",
   "display_name": "Flux",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "license": "MIT",
   "description": "Search the web and read documents with Flux: the passages that answer a question, with people, places, organisations and dates written in.",
   "author": {

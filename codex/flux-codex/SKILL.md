@@ -61,7 +61,7 @@ Pass `published` (an ISO date) with pasted text when you know it, so relative da
 
 For many documents, send `documents` (up to 100) in one call. Documents that could not be read are listed under "Not read" and cost nothing; report them.
 
-For `search`, `enrich: 0` returns links without reading pages and is the fastest. Use `allowed_domains` or `blocked_domains` when the user names sites to trust or avoid.
+For `search`, `enrich: 0` returns links without reading pages and is the fastest. Use `allowed_domains` or `blocked_domains` when the user names sites to trust or avoid. Pass `questions` (up to 9) to get the same facts from every page read, each answered from that page alone.
 
 ## Read and report the result
 

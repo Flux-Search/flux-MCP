@@ -1,6 +1,6 @@
 {
   "name": "flux-mcp",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "MCP server for the Flux API: Lineage (the passages that answer a question, with context written in) and Search",
   "license": "MIT",
   "repository": {
